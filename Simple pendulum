@@ -1,0 +1,79 @@
+'''
+=====================================================================
+Nome do programa: Simulação Não-Linear Pendulo
+Data: 18/07/2025
+Linguagem: Phyton
+Depêndencias: Mathplotlib e Numpy
+--------------------------------------------------------------------
+Nome: Eduardo Moura Ventorim
+Instituto de Física
+UFMS - Campo Grande
+Descrição: Programa que realiza a partir de metódos númericos a
+simulação física de um simples sistema de pendulo, considerando
+forças externas atuantes.
+===================================================================
+'''
+#----------------------------
+#blibliotecas e funções
+import matplotlib.pyplot as plt
+import numpy as np
+from Sim_n_lin.pendulo_simples.RK4 import rgkt4
+#----------------------------
+#parâmetros físicos do sistema:
+m = 0.5 #Massa (KG)
+g = 9.81 #Gravidade (M/S^2)
+l = 0.5 #comprimento pendulo (M)
+a = 1.465 #Amplititude força externa (N)
+w = 0.666 #frequência força externa (rad/s)
+dt = 0.001 #passo temportal (s)
+b = 0.2 #coeficiente de dissipação (kg/s)
+#------------------------------------------
+#definir EDOs a ser resolvida:
+def eqmov(t,X):
+    x1, x2 = X
+    dx1 = x2
+    dx2 = -g/l*(np.sin(x1)) - b*x2 + a*np.cos(w*t)
+    return np.array([dx1,dx2])
+#--------------------------------------------
+#condições inicias
+X0 = [0.2, 0.0]
+t0 = 0.0
+tf = 20.0
+#---------------------------------------------
+#aplicar função
+t, y = rgkt4(eqmov,dt,tf,t0,X0)
+theta_vals = y[:,0]
+Dtheta_vals = y[:, 1]
+#----------------------------------------------
+#plotagem dos gráficos
+plt.figure(figsize=(12, 8))
+
+#gráfico 1: posição
+plt.subplot(2,2,1)
+plt.plot(t, theta_vals, label='Theta(t)', color='blue')
+plt.title('Posição angular do pendulo em função do tempo')
+plt.xlabel('Tempo (S)')
+plt.ylabel('θ (rad)')
+plt.grid(True)
+plt.legend()
+
+#gráfico 2: Velocidade
+plt.subplot(2,2,2)
+plt.plot(t, Dtheta_vals, label='DTheta(t)', color='blue')
+plt.title('Velocidade angular do pendulo em função do tempo')
+plt.xlabel('Tempo (S)')
+plt.ylabel('ω (rad/s)')
+plt.grid(True)
+plt.legend()
+
+#gráfico 3: Espaço de fase
+plt.subplot(2,2,3)
+plt.plot(theta_vals,Dtheta_vals, color='green')
+plt.title('Espaço de fases(θ × ω)')
+plt.xlabel('θ (rad)')
+plt.ylabel('ω (rad/s)')
+plt.grid(True)
+
+plt.tight_layout()
+plt.show()
+#================================================================
