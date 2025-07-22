@@ -1,0 +1,78 @@
+'''
+=====================================================================
+Nome do programa: Simulação oscilador de duffing
+Data: 21/07/2025
+Linguagem: Phyton
+Depêndencias: Mathplotlib e Numpy
+--------------------------------------------------------------------
+Nome: Eduardo Moura Ventorim
+Instituto de Física
+UFMS - Campo Grande
+Descrição: Programa que realiza a partir de metódos númericos a
+simulação física de um simples sistema de pendulo, considerando
+forças externas atuantes.
+===================================================================
+'''
+import matplotlib.pyplot as plt
+import numpy as np
+from Sim_n_lin.pendulo_simples.RK4 import rgkt4
+#===================================================================
+#parametros físicos do sistema
+k = 3.0 #rigidez da mola
+A = 10.0
+c = 1.5 #coeficiente de amortecimento
+f = 2.0 #amplitude da força
+w = 32.0 #frequência da força
+m = 10.0 #massa do objeto
+dt = 0.01#passo do RK
+#--------------------------------------------
+#definindo matriz para aplicar RK4
+def eqt(t, X):
+    x1, x2 = X
+    dx1 = x2
+    dx2 = (f/m)*np.cos(w*t)-(k*x1)-A*(x1**3)-(c*x2/m)
+    return np.array([dx1,dx2])
+#--------------------------------------------
+#condições inicias
+x0 = [0.0,0.0]
+t0 = 0.0
+tf = 20.0
+#---------------------------------------------
+#aplicando simulação
+t, y = rgkt4(eqt,dt,tf,t0,x0)
+x = y[:, 0] #posição
+dx = y[:, 1] #velocidade
+#---------------------------------------------
+#plot dos grafícos
+
+plt.subplot()
+
+#Gráfico de posíção
+plt.subplot(2,2,1)
+plt.plot(x, t, label='Posição (m)', color='red')
+plt.legend()
+plt.title('Posição pelo tempo')
+plt.grid(True)
+plt.xlabel('Tempo (s)')
+plt.ylabel('Posição (m)')
+
+#gráfico de velocidade
+plt.subplot(2,2,2)
+plt.plot(x, t, label='Velocidade (m/s)', color='blue')
+plt.title('Velocidade pelo tempo')
+plt.legend()
+plt.grid(True)
+plt.xlabel('Tempo (s)')
+plt.ylabel('velocidade (m/s)')
+
+#gráfico de espaço de fase
+plt.subplot(2,2,3)
+plt.plot(x, dx, color='green')
+plt.title('Espaço de Fase')
+plt.grid(True)
+plt.xlabel('Velocidade (m/s)')
+plt.ylabel('Posição(m)')
+
+plt.tight_layout()
+plt.show()
+#======================================================================
